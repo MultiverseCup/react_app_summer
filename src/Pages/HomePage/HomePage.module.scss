@@ -1,0 +1,32 @@
+.main {
+  min-height: 100vh;
+  background-color: #fafafa;
+}
+
+.hero {
+  background: linear-gradient(135deg, #ff8c42 0%, #ff6b00 100%);
+  color: white;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.title {
+  font-size: 48px;
+  margin: 0 0 16px;
+}
+
+.subtitle {
+  font-size: 20px;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.menuSection {
+  padding: 40px 0;
+}
+
+.menuHeading {
+  text-align: center;
+  font-size: 32px;
+  margin-bottom: 40px;
+}

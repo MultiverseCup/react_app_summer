@@ -1,0 +1,63 @@
+import { Link } from "react-router-dom";
+import { Button } from "../../UI/Button/Button";
+import { useAuth } from "../../../hooks/useAuth";
+import { useCart } from "../../../hooks/useCart";
+import styles from "./Header.module.scss";
+
+export const Header = () => {
+  const { user, logout } = useAuth();
+  const { totalCount } = useCart();
+
+  return (
+    <header className={styles.header}>
+      <div className={styles.logo}>
+        <Link to="/">
+          <img
+            src="/images/logo.svg"
+            alt="Логотип"
+            className={styles.logoImage}
+          />
+        </Link>
+      </div>
+      <nav className={styles.nav}>
+        <Link to="/" className={styles.navLink}>
+          Главная
+        </Link>
+        <Link to="/menu" className={styles.navLink}>
+          Меню
+        </Link>
+        <Link to="/cart" className={styles.cartLink}>
+          <span className={styles.cartIcon}>🛒</span>
+          {totalCount > 0 && (
+            <span className={styles.cartBadge}>{totalCount}</span>
+          )}
+        </Link>
+      </nav>
+      <div className={styles.header__right}>
+        <div className={styles.location}>
+          <img
+            src="/images/location.svg"
+            alt=""
+            className={styles.locationIcon}
+          />
+          <span>Екатеринбург</span>
+        </div>
+        <span className={styles.phone}>+7(999)-999-99-99</span>
+        {user ? (
+          <div className={styles.userMenu}>
+            <Link to="/profile" className={styles.userName}>
+              {user.name || user.email}
+            </Link>
+            <Button color="white" onClick={logout}>
+              Выйти
+            </Button>
+          </div>
+        ) : (
+          <Link to="/login">
+            <Button>Войти</Button>
+          </Link>
+        )}
+      </div>
+    </header>
+  );
+};

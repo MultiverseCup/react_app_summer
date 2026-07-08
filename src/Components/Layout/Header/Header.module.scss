@@ -1,0 +1,102 @@
+.header {
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 80px;
+  padding: 0 40px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  margin-left: 0;
+}
+
+.logoImage {
+  height: 40px;
+  width: auto;
+}
+
+.nav {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.navLink {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  transition: color 0.2s;
+
+  &:hover {
+    color: #ff6b00;
+  }
+}
+
+.cartLink {
+  position: relative;
+  text-decoration: none;
+  font-size: 24px;
+}
+
+.cartIcon {
+  display: inline-block;
+}
+
+.cartBadge {
+  position: absolute;
+  top: -8px;
+  right: -10px;
+  background: #ff6b00;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header__right {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.location {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #555;
+}
+
+.locationIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.phone {
+  font-weight: 600;
+}
+
+.userMenu {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.userName {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+
+  &:hover {
+    color: #ff6b00;
+  }
+}

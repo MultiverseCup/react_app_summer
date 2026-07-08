@@ -36,7 +36,7 @@ export const LoginPage = () => {
         {errors.email && <span>{errors.email.message}</span>}
         <br></br>
         <span>Password</span>
-        <Input {...register("password")} />
+        <Input {...register("password")} type="password" />
         {errors.password && <span>{errors.password.message}</span>}
         <br></br>
         <button type="submit">Войти</button>

@@ -1,0 +1,43 @@
+.footer {
+  background: #2d2d2d;
+  color: #ccc;
+  padding: 40px 0;
+  margin-top: auto;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.contacts {
+  h3 {
+    color: white;
+    margin-bottom: 12px;
+  }
+
+  p {
+    margin: 4px 0;
+  }
+}
+
+.reviewButton {
+  background: #ff6b00;
+  border: none;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #e05a00;
+  }
+}

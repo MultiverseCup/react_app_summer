@@ -1,29 +1,24 @@
 import { createContext, useEffect, useState, type ReactNode } from "react";
 
-interface User {
+export interface User {
   email: string;
+  name?: string;
 }
 
 interface AuthContextType {
   user: User | null;
-
   login: (user: User) => void;
-
   logout: () => void;
-}
-
-interface AuthProviderProps {
-  children: ReactNode;
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
-export const AuthProvider = ({ children }: AuthProviderProps) => {
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
-  const login = (user: User) => {
-    setUser(user);
-    localStorage.setItem("user", JSON.stringify(user));
+  const login = (userData: User) => {
+    setUser(userData);
+    localStorage.setItem("user", JSON.stringify(userData));
   };
 
   const logout = () => {
@@ -32,10 +27,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   useEffect(() => {
-    const savedUser = localStorage.getItem("user");
-
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
+    const saved = localStorage.getItem("user");
+    if (saved) {
+      setUser(JSON.parse(saved));
     }
   }, []);
 
