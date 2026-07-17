@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom";
 import { Button } from "../../UI/Button/Button";
-import { useAuth } from "../../../hooks/useAuth";
+import { useAuth } from "../../../hooks/useAuth"; // путь может отличаться, если хук лежит в contexts
 import { useCart } from "../../../hooks/useCart";
 import styles from "./Header.module.scss";
 
 export const Header = () => {
-  const { user, logout } = useAuth();
+  const { username, isLogged, logout } = useAuth();
   const { totalCount } = useCart();
 
   return (
@@ -13,7 +13,7 @@ export const Header = () => {
       <div className={styles.logo}>
         <Link to="/">
           <img
-            src="/images/logo.png"
+            src="/images/logo.svg"
             alt="Логотип"
             className={styles.logoImage}
           />
@@ -36,17 +36,17 @@ export const Header = () => {
       <div className={styles.header__right}>
         <div className={styles.location}>
           <img
-            src="/images/location.png"
+            src="/images/location.svg"
             alt=""
             className={styles.locationIcon}
           />
           <span>Екатеринбург</span>
         </div>
         <span className={styles.phone}>+7(999)-999-99-99</span>
-        {user ? (
+        {isLogged ? (
           <div className={styles.userMenu}>
             <Link to="/profile" className={styles.userName}>
-              {user.name || user.email}
+              {username}
             </Link>
             <Button color="white" onClick={logout}>
               Выйти

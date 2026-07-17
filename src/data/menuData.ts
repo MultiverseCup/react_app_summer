@@ -60,7 +60,7 @@ export const menuItems: MenuItem[] = [
   {
     id: "dr2",
     name: "Лимонад",
-    description: "0.5 л, домашний",
+    description: "0.5 л",
     price: 120,
     image: "/images/food/lemonade.png",
     category: "drinks",

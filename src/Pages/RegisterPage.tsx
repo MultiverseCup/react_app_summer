@@ -1,40 +1,40 @@
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { loginSchema } from "../Validation/loginSchema";
+import { registerSchema } from "../Validation/registerSchema";
 import { Input } from "../Components/UI/Input/Input";
 import { useAuth } from "../hooks/useAuth";
 import { useState } from "react";
 import type { InferType } from "yup";
 
-type LoginForm = InferType<typeof loginSchema>;
+type RegisterForm = InferType<typeof registerSchema>;
 
-export const LoginPage = () => {
+export const RegisterPage = () => {
   const navigate = useNavigate();
-  const { login } = useAuth(); // ← используем login
+  const { register: registerUser } = useAuth(); // ← используем register, переименовываем, чтобы не конфликтовало с формой
   const [error, setError] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginForm>({
-    resolver: yupResolver(loginSchema),
+  } = useForm<RegisterForm>({
+    resolver: yupResolver(registerSchema),
   });
 
-  const onSubmit = async (data: LoginForm) => {
+  const onSubmit = async (data: RegisterForm) => {
     try {
       setError(null);
-      await login(data.email, data.password);
+      await registerUser(data.email, data.password);
       navigate("/");
     } catch (err: any) {
-      setError(err.message || "Ошибка входа");
+      setError(err.message || "Ошибка регистрации");
     }
   };
 
   return (
     <div style={{ maxWidth: 400, margin: "40px auto" }}>
-      <h1>Вход</h1>
+      <h1>Регистрация</h1>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Input label="Email" {...register("email")} />
         {errors.email && (
@@ -45,10 +45,10 @@ export const LoginPage = () => {
           <span style={{ color: "red" }}>{errors.password.message}</span>
         )}
         {error && <p style={{ color: "red" }}>{error}</p>}
-        <button type="submit">Войти</button>
+        <button type="submit">Зарегистрироваться</button>
       </form>
       <p>
-        Нет аккаунта? <a href="/register">Зарегистрироваться</a>
+        Уже есть аккаунт? <a href="/login">Войти</a>
       </p>
     </div>
   );
