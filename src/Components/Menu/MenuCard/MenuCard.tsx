@@ -8,7 +8,7 @@ interface MenuCardProps {
 }
 
 export const MenuCard = ({ item }: MenuCardProps) => {
-  const { addItem, items, updateQuantity, removeItem } = useCart();
+  const { addItem, items, updateQuantity, removeItem, orderActive } = useCart();
   const cartItem = items.find((i) => i.id === item.id);
 
   const handleAdd = () => addItem(item);
@@ -40,26 +40,22 @@ export const MenuCard = ({ item }: MenuCardProps) => {
         <p className={styles.description}>{item.description}</p>
         <div className={styles.bottom}>
           <span className={styles.price}>{item.price} ₽</span>
-          {!cartItem ? (
-            <Button onClick={handleAdd}>В корзину</Button>
+          {!orderActive ? (
+            !cartItem ? (
+              <Button onClick={handleAdd}>В корзину</Button>
+            ) : (
+              <div className={styles.counterControls}>
+                <button className={styles.controlBtn} onClick={handleDecrement}>
+                  −
+                </button>
+                <span className={styles.quantity}>{cartItem.quantity}</span>
+                <button className={styles.controlBtn} onClick={handleIncrement}>
+                  +
+                </button>
+              </div>
+            )
           ) : (
-            <div className={styles.counterControls}>
-              <button
-                className={styles.controlBtn}
-                onClick={handleDecrement}
-                aria-label="Уменьшить количество"
-              >
-                −
-              </button>
-              <span className={styles.quantity}>{cartItem.quantity}</span>
-              <button
-                className={styles.controlBtn}
-                onClick={handleIncrement}
-                aria-label="Увеличить количество"
-              >
-                +
-              </button>
-            </div>
+            <span className={styles.locked}>Заказ оформлен</span>
           )}
         </div>
       </div>

@@ -7,17 +7,21 @@ export interface CartItem extends MenuItem {
 
 interface CartState {
   items: CartItem[];
+  orderActive: boolean;
 }
 
 type CartAction =
   | { type: "ADD_ITEM"; payload: MenuItem }
   | { type: "REMOVE_ITEM"; payload: string }
   | { type: "UPDATE_QUANTITY"; payload: { id: string; quantity: number } }
-  | { type: "CLEAR_CART" };
+  | { type: "CLEAR_CART" }
+  | { type: "ACTIVATE_ORDER" }
+  | { type: "COMPLETE_ORDER" };
 
 const cartReducer = (state: CartState, action: CartAction): CartState => {
   switch (action.type) {
     case "ADD_ITEM": {
+      if (state.orderActive) return state;
       const existing = state.items.find(
         (item) => item.id === action.payload.id,
       );
@@ -37,11 +41,13 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
       };
     }
     case "REMOVE_ITEM":
+      if (state.orderActive) return state;
       return {
         ...state,
         items: state.items.filter((item) => item.id !== action.payload),
       };
     case "UPDATE_QUANTITY":
+      if (state.orderActive) return state;
       return {
         ...state,
         items: state.items.map((item) =>
@@ -51,7 +57,11 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         ),
       };
     case "CLEAR_CART":
-      return { items: [] };
+      return { items: [], orderActive: false };
+    case "ACTIVATE_ORDER":
+      return { ...state, orderActive: true };
+    case "COMPLETE_ORDER":
+      return { items: [], orderActive: false };
     default:
       return state;
   }
@@ -59,10 +69,13 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
 
 interface CartContextType {
   items: CartItem[];
+  orderActive: boolean;
   addItem: (item: MenuItem) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
+  activateOrder: () => void;
+  completeOrder: () => void;
   totalCount: number;
   totalPrice: number;
 }
@@ -72,16 +85,22 @@ export const CartContext = createContext<CartContextType | null>(null);
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(
     cartReducer,
-    { items: [] },
+    { items: [], orderActive: false },
     (initial) => {
-      const saved = localStorage.getItem("cart");
-      return saved ? { items: JSON.parse(saved) } : initial;
+      const savedCart = localStorage.getItem("cart");
+      const items = savedCart ? JSON.parse(savedCart) : [];
+      const orderActive = localStorage.getItem("orderActive") === "true";
+      return { items, orderActive };
     },
   );
 
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(state.items));
   }, [state.items]);
+
+  useEffect(() => {
+    localStorage.setItem("orderActive", String(state.orderActive));
+  }, [state.orderActive]);
 
   const addItem = (item: MenuItem) =>
     dispatch({ type: "ADD_ITEM", payload: item });
@@ -90,6 +109,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const updateQuantity = (id: string, quantity: number) =>
     dispatch({ type: "UPDATE_QUANTITY", payload: { id, quantity } });
   const clearCart = () => dispatch({ type: "CLEAR_CART" });
+  const activateOrder = () => dispatch({ type: "ACTIVATE_ORDER" });
+  const completeOrder = () => dispatch({ type: "COMPLETE_ORDER" });
 
   const totalCount = state.items.reduce(
     (sum: number, item: CartItem) => sum + item.quantity,
@@ -104,10 +125,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     <CartContext.Provider
       value={{
         items: state.items,
+        orderActive: state.orderActive,
         addItem,
         removeItem,
         updateQuantity,
         clearCart,
+        activateOrder,
+        completeOrder,
         totalCount,
         totalPrice,
       }}

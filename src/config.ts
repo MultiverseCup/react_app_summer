@@ -1,0 +1,1 @@
+export const PREPARATION_TIME_MINUTES = 1;

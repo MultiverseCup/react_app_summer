@@ -13,7 +13,7 @@ export const Header = () => {
       <div className={styles.logo}>
         <Link to="/">
           <img
-            src="/images/logo.svg"
+            src="public\images\logo.png"
             alt="Логотип"
             className={styles.logoImage}
           />
@@ -36,7 +36,7 @@ export const Header = () => {
       <div className={styles.header__right}>
         <div className={styles.location}>
           <img
-            src="/images/location.svg"
+            src="public\images\location.png"
             alt=""
             className={styles.locationIcon}
           />
