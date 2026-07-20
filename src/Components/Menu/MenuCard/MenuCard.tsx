@@ -1,5 +1,7 @@
 import type { MenuItem } from "../../../types/menu";
 import { useCart } from "../../../hooks/useCart";
+import { useAuth } from "../../../hooks/useAuth";
+import { getActiveOrderForUser } from "../../../utils/localData";
 import { Button } from "../../UI/Button/Button";
 import styles from "./MenuCard.module.scss";
 
@@ -8,9 +10,15 @@ interface MenuCardProps {
 }
 
 export const MenuCard = ({ item }: MenuCardProps) => {
-  const { addItem, items, updateQuantity, removeItem, orderActive } = useCart();
+  const { addItem, items, updateQuantity, removeItem } = useCart();
+  const { user } = useAuth();
+
   const cartItem = items.find((i) => i.id === item.id);
 
+  // Проверяем, есть ли активный заказ у текущего пользователя
+  const hasActiveOrder = user
+    ? getActiveOrderForUser(user.email) !== null
+    : false;
   const handleAdd = () => addItem(item);
   const handleIncrement = () => {
     if (cartItem) updateQuantity(item.id, cartItem.quantity + 1);
@@ -40,22 +48,20 @@ export const MenuCard = ({ item }: MenuCardProps) => {
         <p className={styles.description}>{item.description}</p>
         <div className={styles.bottom}>
           <span className={styles.price}>{item.price} ₽</span>
-          {!orderActive ? (
-            !cartItem ? (
-              <Button onClick={handleAdd}>В корзину</Button>
-            ) : (
-              <div className={styles.counterControls}>
-                <button className={styles.controlBtn} onClick={handleDecrement}>
-                  −
-                </button>
-                <span className={styles.quantity}>{cartItem.quantity}</span>
-                <button className={styles.controlBtn} onClick={handleIncrement}>
-                  +
-                </button>
-              </div>
-            )
-          ) : (
+          {hasActiveOrder ? (
             <span className={styles.locked}>Заказ оформлен</span>
+          ) : !cartItem ? (
+            <Button onClick={handleAdd}>В корзину</Button>
+          ) : (
+            <div className={styles.counterControls}>
+              <button className={styles.controlBtn} onClick={handleDecrement}>
+                −
+              </button>
+              <span className={styles.quantity}>{cartItem.quantity}</span>
+              <button className={styles.controlBtn} onClick={handleIncrement}>
+                +
+              </button>
+            </div>
           )}
         </div>
       </div>

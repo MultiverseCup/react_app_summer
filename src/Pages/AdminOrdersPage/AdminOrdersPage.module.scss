@@ -1,0 +1,43 @@
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+.empty {
+  text-align: center;
+  color: #888;
+  margin-top: 40px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+
+  th,
+  td {
+    border: 1px solid #eee;
+    padding: 12px;
+    text-align: left;
+  }
+
+  th {
+    background: #fafafa;
+    font-weight: 600;
+  }
+}
+
+.status-active {
+  color: #e67e22;
+  font-weight: 600;
+}
+
+.status-ready {
+  color: #27ae60;
+  font-weight: 600;
+}
+
+.status-completed {
+  color: #7f8c8d;
+}

@@ -6,64 +6,74 @@ import { OrderModal } from "../../Components/OrderModal";
 import { PREPARATION_TIME_MINUTES } from "../../config";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../Contexts/AuthContext";
-
-type OrderStatus = "idle" | "ordering" | "ordered" | "ready";
+import {
+  addOrder,
+  getActiveOrderForUser,
+  updateOrderStatus,
+  type Order,
+} from "../../utils/localData";
 
 export const CartPage = () => {
   const navigate = useNavigate();
-  const { isLogged } = useAuth();
-  const { items, orderActive, activateOrder, completeOrder, totalPrice } =
-    useCart();
+  const { user, isLogged } = useAuth();
+  const { items, clearCart, totalPrice } = useCart();
 
-  const [orderStatus, setOrderStatus] = useState<OrderStatus>("idle");
+  const [activeOrder, setActiveOrder] = useState<Order | null>(null);
   const [timeLeft, setTimeLeft] = useState(0);
   const [showModal, setShowModal] = useState(false);
 
-  // При монтировании проверяем, был ли активный заказ
+  // Восстановление активного заказа по email пользователя
   useEffect(() => {
-    if (orderActive) {
-      const savedOrderTime = localStorage.getItem("orderTime");
-      if (savedOrderTime) {
-        const orderTime = new Date(savedOrderTime).getTime();
-        const now = Date.now();
-        const elapsedMs = now - orderTime;
-        const totalMs = PREPARATION_TIME_MINUTES * 60 * 1000;
-        const remainingMs = Math.max(totalMs - elapsedMs, 0);
-        const remainingMin = Math.ceil(remainingMs / 60000);
-        if (remainingMin > 0) {
-          setOrderStatus("ordered");
-          setTimeLeft(remainingMin);
-        } else {
-          setOrderStatus("ready");
-        }
-      } else {
-        // Если orderActive, но нет orderTime (редкий случай) – создадим
-        localStorage.setItem("orderTime", new Date().toISOString());
-        setOrderStatus("ordered");
-        setTimeLeft(PREPARATION_TIME_MINUTES);
+    if (!user?.email) {
+      setActiveOrder(null);
+      return;
+    }
+    const existing = getActiveOrderForUser(user.email);
+    if (existing) {
+      setActiveOrder(existing);
+      if (existing.status === "active") {
+        const elapsed = Date.now() - new Date(existing.orderTime).getTime();
+        const remaining = Math.max(
+          PREPARATION_TIME_MINUTES * 60 * 1000 - elapsed,
+          0,
+        );
+        setTimeLeft(Math.ceil(remaining / 60000));
       }
     }
-  }, [orderActive]);
+  }, [user]);
 
-  // Таймер в минутах
+  // Таймер обратного отсчёта
   useEffect(() => {
-    if (orderStatus !== "ordered") return;
-    const interval = setInterval(() => {
+    if (!activeOrder || activeOrder.status !== "active") return;
+    const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
-          clearInterval(interval);
-          setOrderStatus("ready");
+          clearInterval(timer);
           return 0;
         }
         return prev - 1;
       });
-    }, 60000); // раз в минуту
+    }, 60000);
+    return () => clearInterval(timer);
+  }, [activeOrder]);
+
+  // Опрос статуса заказа (реакция на действия админа)
+  useEffect(() => {
+    if (!activeOrder || activeOrder.status === "completed" || !user?.email)
+      return;
+    const interval = setInterval(() => {
+      const order = getActiveOrderForUser(user.email);
+      if (order && order.status !== activeOrder.status) {
+        setActiveOrder(order);
+        if (order.status === "ready") setTimeLeft(0);
+      }
+    }, 3000);
     return () => clearInterval(interval);
-  }, [orderStatus]);
+  }, [activeOrder, user]);
 
   const handleCheckout = () => {
     if (items.length === 0) return;
-    if (!isLogged) {
+    if (!isLogged || !user) {
       navigate("/login");
       return;
     }
@@ -71,37 +81,36 @@ export const CartPage = () => {
   };
 
   const handleOrderSubmit = () => {
-    const orderTime = new Date().toISOString();
-    localStorage.setItem("orderTime", orderTime);
-    activateOrder();
-    setOrderStatus("ordered");
+    if (!user) return;
+    const newOrder: Order = {
+      id: Date.now().toString(),
+      userId: user.email, // ← используем email как идентификатор
+      items: [...items],
+      totalPrice,
+      orderTime: new Date().toISOString(),
+      status: "active",
+    };
+    addOrder(newOrder);
+    clearCart();
+    setActiveOrder(newOrder);
     setTimeLeft(PREPARATION_TIME_MINUTES);
     setShowModal(false);
   };
 
   const handlePickup = () => {
-    completeOrder();
-    localStorage.removeItem("orderTime");
-    setOrderStatus("idle");
+    if (activeOrder) {
+      updateOrderStatus(activeOrder.id, "completed");
+      setActiveOrder(null);
+    }
   };
 
-  if (items.length === 0 && !orderActive) {
+  // Отображение активного заказа
+  if (activeOrder) {
     return (
       <div className={styles.container}>
-        <h2>Корзина пуста</h2>
-        <p>Добавьте товары из меню</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className={styles.container}>
-      <h1>Корзина</h1>
-
-      {/* Список товаров всегда виден, если корзина не пуста */}
-      {items.length > 0 && (
+        <h1>Корзина</h1>
         <div className={styles.itemList}>
-          {items.map((item) => (
+          {activeOrder.items.map((item) => (
             <div key={item.id} className={styles.item}>
               <img
                 src={item.image}
@@ -118,40 +127,68 @@ export const CartPage = () => {
             </div>
           ))}
         </div>
-      )}
-
-      {orderStatus === "ordered" && (
-        <div className={styles.timerSection}>
-          <p>Заказ будет готов через: {timeLeft} мин.</p>
-        </div>
-      )}
-
-      {orderStatus === "ready" && (
-        <div className={styles.readySection}>
-          <p>Заказ готов!</p>
-          <p>Вы забрали заказ?</p>
-          <Button onClick={handlePickup}>Да, забрал</Button>
-        </div>
-      )}
-
-      {!orderActive && items.length > 0 && (
-        <>
-          <div className={styles.deliveryOptions}>
-            <button className={`${styles.optionBtn} ${styles.active}`}>
-              Самовывоз
-            </button>
-            <button className={styles.optionBtn} disabled>
-              Доставка (недоступно)
-            </button>
+        {activeOrder.status === "active" && (
+          <div className={styles.timerSection}>
+            <p>Заказ будет готов через: {timeLeft} мин.</p>
           </div>
-          <div className={styles.summary}>
-            <span>Итого:</span>
-            <span className={styles.totalPrice}>{totalPrice} ₽</span>
+        )}
+        {activeOrder.status === "ready" && (
+          <div className={styles.readySection}>
+            <p>Заказ готов!</p>
+            <p>Вы забрали заказ?</p>
+            <Button onClick={handlePickup}>Да, забрал</Button>
           </div>
-          <Button onClick={handleCheckout}>Оформить заказ</Button>
-        </>
-      )}
+        )}
+        {activeOrder.status === "completed" && <p>Заказ завершён. Спасибо!</p>}
+      </div>
+    );
+  }
 
+  // Пустая корзина
+  if (items.length === 0) {
+    return (
+      <div className={styles.container}>
+        <h2>Корзина пуста</h2>
+        <p>Добавьте товары из меню</p>
+      </div>
+    );
+  }
+
+  // Обычная корзина
+  return (
+    <div className={styles.container}>
+      <h1>Корзина</h1>
+      <div className={styles.itemList}>
+        {items.map((item) => (
+          <div key={item.id} className={styles.item}>
+            <img
+              src={item.image}
+              alt={item.name}
+              className={styles.itemImage}
+            />
+            <div className={styles.itemInfo}>
+              <h3>{item.name}</h3>
+              <p>{item.price} ₽</p>
+            </div>
+            <div className={styles.itemTotal}>
+              {item.price * item.quantity} ₽
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className={styles.deliveryOptions}>
+        <button className={`${styles.optionBtn} ${styles.active}`}>
+          Самовывоз
+        </button>
+        <button className={styles.optionBtn} disabled>
+          Доставка (недоступно)
+        </button>
+      </div>
+      <div className={styles.summary}>
+        <span>Итого:</span>
+        <span className={styles.totalPrice}>{totalPrice} ₽</span>
+      </div>
+      <Button onClick={handleCheckout}>Оформить заказ</Button>
       {showModal && (
         <OrderModal
           onClose={() => setShowModal(false)}

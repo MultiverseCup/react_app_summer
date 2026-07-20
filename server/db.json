@@ -5,6 +5,18 @@
       "email": "artur@email.com",
       "password": "123",
       "username": "artur"
+    },
+    {
+      "id": "1784545239259",
+      "email": "artur.gareev.06.10@gmail.com",
+      "password": "123",
+      "username": "artur.gareev.06.10"
+    },
+    {
+      "id": "1784545291843",
+      "email": "admin@email.com",
+      "password": "admin",
+      "username": "admin"
     }
   ]
 }

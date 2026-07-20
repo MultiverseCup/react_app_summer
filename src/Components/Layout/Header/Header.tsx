@@ -5,7 +5,7 @@ import { useCart } from "../../../hooks/useCart";
 import styles from "./Header.module.scss";
 
 export const Header = () => {
-  const { username, isLogged, logout } = useAuth();
+  const { user, isLogged, logout } = useAuth();
   const { totalCount } = useCart();
 
   return (
@@ -13,7 +13,7 @@ export const Header = () => {
       <div className={styles.logo}>
         <Link to="/">
           <img
-            src="public\images\logo.png"
+            src="\images\logo.png"
             alt="Логотип"
             className={styles.logoImage}
           />
@@ -36,7 +36,7 @@ export const Header = () => {
       <div className={styles.header__right}>
         <div className={styles.location}>
           <img
-            src="public\images\location.png"
+            src="\images\location.png"
             alt=""
             className={styles.locationIcon}
           />
@@ -46,7 +46,7 @@ export const Header = () => {
         {isLogged ? (
           <div className={styles.userMenu}>
             <Link to="/profile" className={styles.userName}>
-              {username}
+              {user?.username}
             </Link>
             <Button color="white" onClick={logout}>
               Выйти

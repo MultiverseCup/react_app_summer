@@ -1,11 +1,17 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 
+export interface User {
+  id: string;
+  username: string;
+  email: string;
+  role: "user" | "admin";
+}
+
 interface AuthContextType {
   isLogged: boolean;
-  username: string | null;
+  user: User | null;
   token: string | null;
-  role: "user" | "guest";
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   logout: () => void;
@@ -19,12 +25,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(() =>
     localStorage.getItem("auth_token"),
   );
-  const [username, setUsername] = useState<string | null>(() =>
-    localStorage.getItem("username"),
-  );
-  const [isLogged, setIsLogged] = useState<boolean>(
-    () => localStorage.getItem("isLogged") === "true",
-  );
+  const [user, setUser] = useState<User | null>(() => {
+    const stored = localStorage.getItem("user");
+    return stored ? JSON.parse(stored) : null;
+  });
+
+  const isLogged = !!user && !!token;
 
   const login = async (email: string, password: string) => {
     const res = await fetch("/api/login", {
@@ -35,12 +41,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Ошибка входа");
 
+    // Определяем роль по имени (только для учебного проекта)
+    const role = data.username === "admin" ? "admin" : "user";
+    const userData: User = {
+      id: email.toLowerCase(), // постоянный ID на основе email
+      username: data.username,
+      email: email,
+      role: data.username === "admin" ? "admin" : "user",
+    };
+
     localStorage.setItem("auth_token", data.token);
-    localStorage.setItem("username", data.username);
-    localStorage.setItem("isLogged", "true");
+    localStorage.setItem("user", JSON.stringify(userData));
     setToken(data.token);
-    setUsername(data.username);
-    setIsLogged(true);
+    setUser(userData);
   };
 
   const register = async (email: string, password: string) => {
@@ -52,28 +65,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Ошибка регистрации");
 
+    const userData: User = {
+      id: email.toLowerCase(),
+      username: data.username,
+      email: email,
+      role: data.username === "admin" ? "admin" : "user",
+    };
+
     localStorage.setItem("auth_token", data.token);
-    localStorage.setItem("username", data.username);
-    localStorage.setItem("isLogged", "true");
+    localStorage.setItem("user", JSON.stringify(userData));
     setToken(data.token);
-    setUsername(data.username);
-    setIsLogged(true);
+    setUser(userData);
   };
 
   const logout = () => {
     localStorage.removeItem("auth_token");
-    localStorage.removeItem("username");
-    localStorage.removeItem("isLogged");
+    localStorage.removeItem("user");
     setToken(null);
-    setUsername(null);
-    setIsLogged(false);
+    setUser(null);
   };
-
-  const role: "user" | "guest" = isLogged ? "user" : "guest";
 
   return (
     <AuthContext.Provider
-      value={{ isLogged, username, token, role, login, register, logout }}
+      value={{ isLogged, user, token, login, register, logout }}
     >
       {children}
     </AuthContext.Provider>
@@ -86,7 +100,6 @@ export const useAuth = () => {
   return context;
 };
 
-// Компонент для защиты маршрутов
 export function ProtectedRoute({ children }: { children: ReactNode }) {
   const { isLogged } = useAuth();
   if (!isLogged) return <Navigate to="/login" replace />;
