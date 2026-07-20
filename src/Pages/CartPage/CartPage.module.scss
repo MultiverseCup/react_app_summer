@@ -88,3 +88,22 @@
 .totalPrice {
   font-weight: 700;
 }
+
+.itemControls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.removeBtn {
+  background: none;
+  border: none;
+  color: #e00;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 14px;
+
+  &:hover {
+    color: #c00;
+  }
+}

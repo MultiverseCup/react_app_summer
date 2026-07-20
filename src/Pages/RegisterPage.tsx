@@ -6,12 +6,14 @@ import { Input } from "../Components/UI/Input/Input";
 import { useAuth } from "../hooks/useAuth";
 import { useState } from "react";
 import type { InferType } from "yup";
+import styles from "./LoginPage.module.scss";
+import { Button } from "../Components/UI/Button/Button";
 
 type RegisterForm = InferType<typeof registerSchema>;
 
 export const RegisterPage = () => {
   const navigate = useNavigate();
-  const { register: registerUser } = useAuth(); // ← используем register, переименовываем, чтобы не конфликтовало с формой
+  const { register: registerUser } = useAuth();
   const [error, setError] = useState<string | null>(null);
 
   const {
@@ -33,21 +35,31 @@ export const RegisterPage = () => {
   };
 
   return (
-    <div style={{ maxWidth: 400, margin: "40px auto" }}>
-      <h1>Регистрация</h1>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Input label="Email" {...register("email")} />
+    <div className={styles.wrapper}>
+      <h1 className={styles.loginTitle}>Регистрация</h1>
+      <form className={styles.authForm} onSubmit={handleSubmit(onSubmit)}>
+        <Input
+          label="Email"
+          placeholder="example@email.com"
+          {...register("email")}
+        />
         {errors.email && (
-          <span style={{ color: "red" }}>{errors.email.message}</span>
+          <span className={styles.error}>{errors.email.message}</span>
         )}
-        <Input label="Пароль" type="password" {...register("password")} />
+        <Input
+          className={styles.authInput}
+          label="Пароль"
+          type="password"
+          placeholder="Пароль"
+          {...register("password")}
+        />
         {errors.password && (
-          <span style={{ color: "red" }}>{errors.password.message}</span>
+          <span className={styles.error}>{errors.password.message}</span>
         )}
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        <button type="submit">Зарегистрироваться</button>
+        {error && <p className={styles.error}>{error}</p>}
+        <Button type="submit">Зарегистрироваться</Button>
       </form>
-      <p>
+      <p className={styles.loginText}>
         Уже есть аккаунт? <a href="/login">Войти</a>
       </p>
     </div>

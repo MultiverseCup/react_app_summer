@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useCart } from "../../hooks/useCart";
 import { Button } from "../../Components/UI/Button/Button";
+import { Counter } from "../../Components/UI/Counter/Counter";
 import styles from "./CartPage.module.scss";
 import { OrderModal } from "../../Components/OrderModal";
 import { PREPARATION_TIME_MINUTES } from "../../config";
@@ -16,7 +17,8 @@ import {
 export const CartPage = () => {
   const navigate = useNavigate();
   const { user, isLogged } = useAuth();
-  const { items, clearCart, totalPrice } = useCart();
+  const { items, updateQuantity, removeItem, clearCart, totalPrice } =
+    useCart();
 
   const [activeOrder, setActiveOrder] = useState<Order | null>(null);
   const [timeLeft, setTimeLeft] = useState(0);
@@ -84,7 +86,7 @@ export const CartPage = () => {
     if (!user) return;
     const newOrder: Order = {
       id: Date.now().toString(),
-      userId: user.email, // ← используем email как идентификатор
+      userId: user.email,
       items: [...items],
       totalPrice,
       orderTime: new Date().toISOString(),
@@ -154,7 +156,7 @@ export const CartPage = () => {
     );
   }
 
-  // Обычная корзина
+  // Обычная корзина с возможностью редактирования
   return (
     <div className={styles.container}>
       <h1>Корзина</h1>
@@ -169,6 +171,23 @@ export const CartPage = () => {
             <div className={styles.itemInfo}>
               <h3>{item.name}</h3>
               <p>{item.price} ₽</p>
+            </div>
+            <div className={styles.itemControls}>
+              <Counter
+                value={item.quantity}
+                onChange={(newQty) => {
+                  if (newQty <= 0) removeItem(item.id);
+                  else updateQuantity(item.id, newQty);
+                }}
+                min={0}
+                max={99}
+              />
+              <button
+                className={styles.removeBtn}
+                onClick={() => removeItem(item.id)}
+              >
+                Удалить
+              </button>
             </div>
             <div className={styles.itemTotal}>
               {item.price * item.quantity} ₽
