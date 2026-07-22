@@ -17,6 +17,12 @@
       "email": "admin@email.com",
       "password": "admin",
       "username": "admin"
+    },
+    {
+      "id": "1784744763825",
+      "email": "example@email.com",
+      "password": "123",
+      "username": "example"
     }
   ]
 }

@@ -41,10 +41,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Ошибка входа");
 
-    // Определяем роль по имени (только для учебного проекта)
     const role = data.username === "admin" ? "admin" : "user";
     const userData: User = {
-      id: email.toLowerCase(), // постоянный ID на основе email
+      id: email.toLowerCase(),
       username: data.username,
       email: email,
       role: data.username === "admin" ? "admin" : "user",

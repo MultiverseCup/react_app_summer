@@ -56,6 +56,16 @@ export const RegisterPage = () => {
         {errors.password && (
           <span className={styles.error}>{errors.password.message}</span>
         )}
+        <Input
+          className={styles.authInput}
+          label="Подтверждение пароля"
+          type="password"
+          placeholder="Повторите пароль"
+          {...register("confirmPassword")}
+        />
+        {errors.confirmPassword && (
+          <span className={styles.error}>{errors.confirmPassword.message}</span>
+        )}
         {error && <p className={styles.error}>{error}</p>}
         <Button type="submit">Зарегистрироваться</Button>
       </form>

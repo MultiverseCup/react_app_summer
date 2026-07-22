@@ -1,77 +1,144 @@
-# React + TypeScript + Vite
+# 🥙 Шаурмечная — онлайн-заказ еды
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Одностраничное приложение (SPA) для заказа шаурмы и бургеров с возможностью самовывоза. Реализована авторизация с разделением ролей, корзина с динамическим количеством, таймер готовности и административная панель для управления статусами заказов.
 
-Currently, two official plugins are available:
+## 🚀 Функциональные возможности
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Просмотр меню по категориям (шаурма, бургеры, напитки, закуски)
+- Добавление товаров в корзину, изменение количества и удаление
+- Регистрация и вход в систему с JWT-аутентификацией
+- Оформление заказа (самовывоз) с эмуляцией оплаты картой
+- Отслеживание готовности заказа по таймеру (15 минут)
+- Блокировка добавления в корзину при активном заказе
+- Ролевая модель:
+  - `guest` — просмотр меню и сбор корзины
+  - `user` — оформление и отслеживание заказов
+  - `admin` — просмотр всех заказов и отметка о готовности
+- Админ-панель (`/admin/orders`) доступна только для роли `admin`
+- Валидация всех форм (логин, регистрация, оплата)
+- Сохранение состояния между сессиями (корзина, заказы, авторизация)
 
-## React Compiler
+## 🛠 Технологический стек
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+**Фронтенд**
 
-Note: This will impact Vite dev & build performances.
+- [Vite](https://vitejs.dev/) + [React 18](https://react.dev/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [React Router v6](https://reactrouter.com/)
+- [React Hook Form](https://react-hook-form.com/) + [Yup](https://github.com/jquense/yup)
+- [SCSS Modules](https://sass-lang.com/)
+- Context API + `useReducer`
 
-## Expanding the ESLint configuration
+**Бэкенд (эмуляция)**
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- [Node.js](https://nodejs.org/) (нативный HTTP-сервер)
+- [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken) для JWT
+- JSON-файл (`db.json`) как база данных пользователей
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+**Инструменты**
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- ESLint + Prettier (опционально)
+- `concurrently` для одновременного запуска фронта и бэка
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 📁 Структура проекта
 
-```
+shaurma-store/
+├── server/ # Серверная часть
+│ ├── index.cjs # HTTP-сервер, эндпоинты /api/login, /api/register
+│ └── db.json # Хранилище пользователей
+├── src/
+│ ├── components/ # Переиспользуемые UI-компоненты
+│ │ ├── Layout/ # Header, Footer, Layout
+│ │ ├── Menu/ # Карточка товара, сетка меню
+│ │ ├── OrderModal/ # Модальное окно оплаты
+│ │ ├── Admin/ # Компоненты админки
+│ │ └── UI/ # Button, Input, Counter и др.
+│ ├── contexts/ # AuthContext, CartContext
+│ ├── hooks/ # useAuth, useCart
+│ ├── pages/ # Страницы приложения
+│ │ ├── HomePage/
+│ │ ├── LoginPage/
+│ │ ├── RegisterPage/
+│ │ ├── CartPage/
+│ │ └── AdminOrdersPage/
+│ ├── utils/ # Утилиты для работы с заказами (localStorage)
+│ ├── types/ # Типы TypeScript
+│ ├── data/ # Начальное меню
+│ ├── App.tsx
+│ └── main.tsx
+├── .gitignore
+├── package.json
+└── README.md
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+text
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🔧 Установка и запуск
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Предварительные требования
 
-```
+- Node.js версии 18 или выше
+- npm (или yarn)
+
+1. Установка зависимостей
+
+npm install
+
+2. Запуск в режиме разработки
+   Запустите сервер и клиент параллельно:
+
+npm start
+
+Эта команда использует concurrently для одновременного запуска:
+
+Бэкенд (порт 3001) — npm run mock-server
+
+Фронтенд (порт 5173) — npm run dev
+
+Приложение откроется по адресу http://localhost:5173.
+
+Альтернативный способ (два терминала):
+
+bash
+
+# Терминал 1: бэкенд
+
+npm run mock-server
+
+# Терминал 2: фронтенд
+
+npm run dev
+
+4. Сборка для продакшена
+   bash
+   npm run build
+   Собранные файлы будут в папке dist. Для их предпросмотра выполните:
+
+bash
+npm run preview
+Примечание: для работы бэкенда на продакшене необходимо развернуть его отдельно, например, через Docker или на хостинге Node.js.
+
+🔑 Тестовые учётные записи
+Роль Email Пароль
+Администратор admin@email.com admin
+Также можно зарегистрировать нового пользователя – ему автоматически назначается роль user.
+
+📋 Основные страницы
+URL Доступ Описание
+/ Все Главная страница с меню
+/login Гость Вход в систему
+/register Гость Регистрация
+/cart Пользователь Корзина и оформление заказа
+/admin Админ Управление заказами
+⚠️ Особенности реализации
+Авторизация осуществляется с помощью JWT. Токен генерируется сервером при логине/регистрации и сохраняется в localStorage.
+
+Роль определяется на стороне клиента по имени пользователя (admin получает роль admin, остальные – user). Это упрощение для учебного проекта.
+
+Заказы хранятся в localStorage браузера. При активном заказе меню блокируется для редактирования, пока заказ не будет завершён.
+
+Эмуляция оплаты – модальное окно с полями карты. Данные не отправляются и не сохраняются.
+
+Таймер готовности – 15 минут. После истечения времени или отметки администратором появляется кнопка «Забрал».
+
+🧪 Тестирование
+Функциональное тестирование проводилось вручную по основным пользовательским сценариям. Все сценарии отработаны успешно. Проект не содержит критических ошибок, npm run build выполняется без ошибок.

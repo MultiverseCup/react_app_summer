@@ -3,7 +3,7 @@ import { useCart } from "../../hooks/useCart";
 import { Button } from "../../Components/UI/Button/Button";
 import { Counter } from "../../Components/UI/Counter/Counter";
 import styles from "./CartPage.module.scss";
-import { OrderModal } from "../../Components/OrderModal";
+import { OrderModal } from "../../Components/Widgets/OrderModal";
 import { PREPARATION_TIME_MINUTES } from "../../config";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../Contexts/AuthContext";
@@ -24,7 +24,6 @@ export const CartPage = () => {
   const [timeLeft, setTimeLeft] = useState(0);
   const [showModal, setShowModal] = useState(false);
 
-  // Восстановление активного заказа по email пользователя
   useEffect(() => {
     if (!user?.email) {
       setActiveOrder(null);
@@ -44,7 +43,6 @@ export const CartPage = () => {
     }
   }, [user]);
 
-  // Таймер обратного отсчёта
   useEffect(() => {
     if (!activeOrder || activeOrder.status !== "active") return;
     const timer = setInterval(() => {
@@ -59,7 +57,6 @@ export const CartPage = () => {
     return () => clearInterval(timer);
   }, [activeOrder]);
 
-  // Опрос статуса заказа (реакция на действия админа)
   useEffect(() => {
     if (!activeOrder || activeOrder.status === "completed" || !user?.email)
       return;
@@ -106,7 +103,6 @@ export const CartPage = () => {
     }
   };
 
-  // Отображение активного заказа
   if (activeOrder) {
     return (
       <div className={styles.container}>
@@ -146,7 +142,6 @@ export const CartPage = () => {
     );
   }
 
-  // Пустая корзина
   if (items.length === 0) {
     return (
       <div className={styles.container}>
@@ -156,7 +151,6 @@ export const CartPage = () => {
     );
   }
 
-  // Обычная корзина с возможностью редактирования
   return (
     <div className={styles.container}>
       <h1>Корзина</h1>

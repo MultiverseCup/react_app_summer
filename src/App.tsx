@@ -5,7 +5,7 @@ import { LoginPage } from "./Pages/LoginPage";
 import { RegisterPage } from "./Pages/RegisterPage";
 import { CartPage } from "./Pages/CartPage/CartPage";
 import { ProtectedRoute } from "./Contexts/AuthContext";
-import { RequireAdmin } from "./Components/RequireAdmin";
+import { RequireAdmin } from "./Components/Widgets/RequireAdmin";
 import { AdminOrdersPage } from "./Pages/AdminOrdersPage/AdminOrdersPage";
 
 function App() {

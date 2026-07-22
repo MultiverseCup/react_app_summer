@@ -1,4 +1,3 @@
-// server/index.cjs
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const http = require("http");

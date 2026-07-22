@@ -27,7 +27,7 @@ export const menuItems: MenuItem[] = [
   },
   {
     id: "b1",
-    name: "Бургер с котлетой",
+    name: "Бургер Делюкс",
     description: "Говяжья котлета, сыр, салат, соус барбекю",
     price: 200,
     image: "/images/food/burger1.png",
