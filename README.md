@@ -38,39 +38,8 @@
 **Инструменты**
 
 - ESLint + Prettier (опционально)
-- `concurrently` для одновременного запуска фронта и бэка
+- `concurrently` для одновременного запуска фронта и бэк
 
-## 📁 Структура проекта
-
-shaurma-store/
-├── server/ # Серверная часть
-│ ├── index.cjs # HTTP-сервер, эндпоинты /api/login, /api/register
-│ └── db.json # Хранилище пользователей
-├── src/
-│ ├── components/ # Переиспользуемые UI-компоненты
-│ │ ├── Layout/ # Header, Footer, Layout
-│ │ ├── Menu/ # Карточка товара, сетка меню
-│ │ ├── OrderModal/ # Модальное окно оплаты
-│ │ ├── Admin/ # Компоненты админки
-│ │ └── UI/ # Button, Input, Counter и др.
-│ ├── contexts/ # AuthContext, CartContext
-│ ├── hooks/ # useAuth, useCart
-│ ├── pages/ # Страницы приложения
-│ │ ├── HomePage/
-│ │ ├── LoginPage/
-│ │ ├── RegisterPage/
-│ │ ├── CartPage/
-│ │ └── AdminOrdersPage/
-│ ├── utils/ # Утилиты для работы с заказами (localStorage)
-│ ├── types/ # Типы TypeScript
-│ ├── data/ # Начальное меню
-│ ├── App.tsx
-│ └── main.tsx
-├── .gitignore
-├── package.json
-└── README.md
-
-text
 
 ## 🔧 Установка и запуск
 
@@ -98,7 +67,6 @@ text
 
 Альтернативный способ (два терминала):
 
-bash
 
 # Терминал 1: бэкенд
 
