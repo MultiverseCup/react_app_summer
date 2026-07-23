@@ -50,7 +50,7 @@ export const RegisterPage = () => {
           className={styles.authInput}
           label="Пароль"
           type="password"
-          placeholder="Пароль"
+          placeholder="Придумайте пароль"
           {...register("password")}
         />
         {errors.password && (

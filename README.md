@@ -81,18 +81,18 @@ text
 
 1. Установка зависимостей
 
-npm install
+`npm install`
 
 2. Запуск в режиме разработки
    Запустите сервер и клиент параллельно:
 
-npm start
+`npm start`
 
 Эта команда использует concurrently для одновременного запуска:
 
-Бэкенд (порт 3001) — npm run mock-server
+Бэкенд (порт 3001) — `npm run mock-server`
 
-Фронтенд (порт 5173) — npm run dev
+Фронтенд (порт 5173) — `npm run dev`
 
 Приложение откроется по адресу http://localhost:5173.
 
@@ -102,19 +102,17 @@ bash
 
 # Терминал 1: бэкенд
 
-npm run mock-server
+`npm run mock-server`
 
 # Терминал 2: фронтенд
 
-npm run dev
+`npm run dev`
 
 4. Сборка для продакшена
-   bash
-   npm run build
+   `npm run build`
    Собранные файлы будут в папке dist. Для их предпросмотра выполните:
 
-bash
-npm run preview
+`npm run preview`
 Примечание: для работы бэкенда на продакшене необходимо развернуть его отдельно, например, через Docker или на хостинге Node.js.
 
 🔑 Тестовые учётные записи
